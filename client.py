@@ -2,27 +2,38 @@ import socket
 import tkinter as tk
 from tkinter.filedialog import askopenfilename
 HOST,PORT=0,0
-sock = socket.socket()
+sock=''
+flag=False
 filepath=''
-def connect(HOST,PORT):
+def connect():
+    global HOST
+    global PORT
     global sock
     global error_label
     try:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.connect((HOST, int(PORT)))
-
     except:
         error_label['text']='ошибка соединения'
         pass
     error_label['text'] = ''
-    send_picture()
+
 def send_picture():
+    global flag
+    if flag:
+        connect()
+        flag = False
     img=open(filepath,'rb+')
-    data=''
     while True:
         data=img.readline(512)
         if not data:
+            sock.send(data)
             break
         sock.send(data)
+    img.close()
+    sock.close()
+    flag=True
+    print(flag)
 
 def break_connection():
     global sock
@@ -32,10 +43,11 @@ def take_server_data():
     global PORT
     HOST=host_entry.get()
     PORT=port_entry.get()
-    connect(HOST,PORT)
+    connect()
 def open_file():
     global filepath
     filepath = askopenfilename(filetypes=[("All Files", "*.*")])
+    send_picture()
 window=tk.Tk()
 frame_input=tk.Frame(master=window)
 button=tk.Frame(master=window)
