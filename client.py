@@ -13,23 +13,25 @@ def connect():
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.connect((HOST, int(PORT)))
+        error_label['text'] = 'соединение установлено'
     except:
         error_label['text']='ошибка соединения'
         pass
-    error_label['text'] = ''
 
 def send_picture():
+    global error_label
     global flag
     if flag:
         connect()
         flag = False
     img=open(filepath,'rb+')
     while True:
-        data=img.readline(512)
+        data=img.readline(2048)
         if not data:
             sock.send(data)
             break
         sock.send(data)
+    error_label['text']='отправлено'
     img.close()
     sock.close()
     flag=True
