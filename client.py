@@ -1,7 +1,9 @@
 import socket
 import tkinter as tk
+from tkinter.filedialog import askopenfilename
 HOST,PORT=0,0
 sock = socket.socket()
+filepath=''
 def connect(HOST,PORT):
     global sock
     global error_label
@@ -14,7 +16,14 @@ def connect(HOST,PORT):
     error_label['text'] = ''
     send_picture()
 def send_picture():
-    pass
+    img=open(filepath,'rb+')
+    data=''
+    while True:
+        data=img.readline(512)
+        if not data:
+            break
+        sock.send(data)
+
 def break_connection():
     global sock
     sock.close()
@@ -24,7 +33,9 @@ def take_server_data():
     HOST=host_entry.get()
     PORT=port_entry.get()
     connect(HOST,PORT)
-# sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+def open_file():
+    global filepath
+    filepath = askopenfilename(filetypes=[("All Files", "*.*")])
 window=tk.Tk()
 frame_input=tk.Frame(master=window)
 button=tk.Frame(master=window)
@@ -42,8 +53,9 @@ error_label.pack()
 frame_input.pack(side=tk.LEFT,expand=True)
 apply_button=tk.Button(master=button,text="Подключиться", command=take_server_data)
 apply_button.pack()
-decline_button=apply_button=tk.Button(master=button,text="Отключиться", command=break_connection)
+decline_button=tk.Button(master=button,text="Отключиться", command=break_connection)
 decline_button.pack()
 button.pack(side=tk.LEFT,expand=True)
-
+file_button=tk.Button(master=button,text="выбрать файл", command=open_file)
+file_button.pack()
 window.mainloop()
