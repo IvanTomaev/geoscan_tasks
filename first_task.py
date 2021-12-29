@@ -37,7 +37,7 @@ def dist(state,target):
 flight_task=[[12,5],[-4,11],[-5,5],[-5,-5],[17,17],[0,0]]
 state=[0,0,0,0]
 for target in flight_task:
-    while dist(state, target) > 0.1:
+    while dist(state, target) > 0.01:
         v,w = control(state, target, 5, math.pi)
         state[0] += math.cos(state[2])*v*delta_t
         state[1] += math.sin(state[2])*v*delta_t
